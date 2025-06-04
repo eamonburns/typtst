@@ -2,6 +2,7 @@ package state
 
 import (
 	"log"
+	"strings"
 
 	"github.com/agent-e11/typtst/internal/sentence"
 	tea "github.com/charmbracelet/bubbletea"
@@ -63,22 +64,26 @@ func (self *testScreenModel) Update(appModel *AppModel, msg tea.Msg) (pageType, 
 }
 
 func (self testScreenModel) View(appModel AppModel) string {
-	log.Printf("> testScreenModel.View()")
-	s := sentence.RenderedSentence("\n\n  ")
-	for i, r := range []rune(self.sentence) {
-		l := sentence.Letter{
-			Letter: r,
-		}
-		if i == self.cursor {
-			l.T = sentence.LetterCursor
-		} else if i > self.cursor {
-			l.T = sentence.LetterUntyped
-		} else if self.errors[i] {
-			l.T = sentence.LetterError
-		}
-		s = s.AppendLetter(l)
+	log.Printf("> testScreenModel.View(appModel: %v)", appModel)
+
+	// TODO: Make this configurable
+	const padding = 10
+	str := "\n\n"
+	s := sentence.Split(self.sentence)
+
+	if appModel.WindowWidth < 1 {
+		// Window size hasn't been retrieved yet
+		// Don't render anything
+		return ""
 	}
-	s = s.AppendResetColor()
-	s = s.AppendString("\n\n")
-	return string(s)
+	maxLineWidth := appModel.WindowWidth - (2 * padding)
+
+	lines := s.Render(self.cursor, self.errors, maxLineWidth)
+	log.Printf("lines: %q", lines)
+	for _, line := range lines {
+		str += strings.Repeat(" ", padding)
+		str += line
+		str += "\n"
+	}
+	return str
 }

@@ -25,7 +25,7 @@ type AppModel struct {
 
 func Init() AppModel {
 	return AppModel{
-		TestScreenState: newTestScreen("This is a test"),
+		TestScreenState: newTestScreen("This is a test."), // TODO: Test if word wrapping works for long lines
 		CurrentPage:     TestScreenPage,
 	}
 }
@@ -42,6 +42,7 @@ func (self AppModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	switch msg := msg.(type) {
 	case tea.WindowSizeMsg:
+		// FIXME: I think this happens _after_ .View is called, so these values are not accessible in the first .View
 		self.WindowHeight = msg.Height
 		self.WindowWidth = msg.Width
 		log.Printf("(AppModel.Update) New window size: height: %v, width: %v", self.WindowHeight, self.WindowWidth)
@@ -58,6 +59,7 @@ func (self AppModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	self.CurrentPage = nextPage
 
+	// TODO: Should I limit the commands *State.Update methods can return?
 	return self, cmd
 }
 
