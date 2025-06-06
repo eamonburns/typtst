@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"log"
 	"unicode"
+
+	"github.com/agent-e11/typtst/internal/style"
 )
 
 type Sentence []Token
@@ -13,17 +15,13 @@ type Sentence []Token
 func (self Sentence) Render(cursorIdx int, errors map[int]bool, maxWidth int) RenderedSentence {
 	log.Printf("> Sentence.Render(cursorIdx: %v, errors: %v, maxWidth: %v)", cursorIdx, errors, maxWidth)
 	log.Printf("self: %v", self)
-	linePre := TypedColor
-	linePost := ResetColor
 	lines := RenderedSentence{}
-	line := linePre
+	line := style.Get(style.TypedStyle)
 
 	currentIdx := 0
 	currentWidth := 0
 
 	for _, t := range self {
-		// NOTE: I might not even use tokenIdx
-
 		if len(t.String) > maxWidth {
 			// TODO: I might want to eventually split the token to force it to wrap
 			log.Fatalf("Length of token %v is greater than the allowed max width %v", t, maxWidth)
@@ -34,9 +32,13 @@ func (self Sentence) Render(cursorIdx int, errors map[int]bool, maxWidth int) Re
 
 		if currentWidth+len(t.String) > maxWidth {
 			// This line is done, append it and start new line
-			line += linePost
-			lines = append(lines, line) // NOTE: Is this actually copied, or will they all be references to the same string?
-			line = linePre
+			line += style.Get(style.ResetStyle)
+			lines = append(lines, line)
+			if currentIdx < cursorIdx {
+				line = style.Get(style.TypedStyle)
+			} else {
+				line = style.Get(style.UntypedStyle)
+			}
 			currentWidth = 0
 		}
 
@@ -65,9 +67,9 @@ func (self Sentence) Render(cursorIdx int, errors map[int]bool, maxWidth int) Re
 			for i, r := range []rune(t.String) {
 				if errors[currentIdx+i] {
 					// There was an error at the current rune
-					line += ErrorColor
+					line += style.Get(style.ErrorStyle)
 					line += string(r)
-					line += TypedColor
+					line += style.Get(style.TypedStyle)
 				} else {
 					line += string(r)
 				}
@@ -88,19 +90,19 @@ func (self Sentence) Render(cursorIdx int, errors map[int]bool, maxWidth int) Re
 				if currentIdx+i == cursorIdx {
 					// The current rune is at the cursor
 					// Append the rune (Cursor)
-					line += CursorColor
+					line += style.Get(style.CursorStyle)
 					line += string(r)
 					// Append the rest of the token after the cursor (Untyped)
-					line += UntypedColor
+					line += style.Get(style.UntypedStyle)
 					line += string([]rune(t.String)[i+1:]) // FIXME: Make sure this can't index out-of-bounds
 
 					// The rest of the token has been appended. No need to loop over it
 					break
 				} else if errors[currentIdx+i] {
 					// There was an error at the current rune
-					line += ErrorColor
+					line += style.Get(style.ErrorStyle)
 					line += string(r)
-					line += TypedColor
+					line += style.Get(style.TypedStyle)
 				} else {
 					line += string(r)
 				}
@@ -112,68 +114,13 @@ func (self Sentence) Render(cursorIdx int, errors map[int]bool, maxWidth int) Re
 	}
 
 	// Append the last line
-	line += linePost
+	line += style.Get(style.ResetStyle)
 	lines = append(lines, line)
 
 	return lines
 }
 
 type RenderedSentence []string
-
-// FIXME: I don't think this works properly anymore (Because the `RenderedSentece` is a slice of strings now)
-func (s RenderedSentence) AppendLetter(l Letter) RenderedSentence {
-	switch l.T {
-	case TypedLetter:
-		return append(s, TypedColor+string(l.Letter)+ResetColor)
-	case UntypedLetter:
-		return append(s, UntypedColor+string(l.Letter)+ResetColor)
-	case CursorLetter:
-		return append(s, CursorColor+string(l.Letter)+ResetColor)
-	case ErrorLetter:
-		return append(s, ErrorColor+string(l.Letter)+ResetColor)
-	}
-
-	return s
-}
-
-// FIXME: I don't think this works properly anymore (Because the `RenderedSentece` is a slice of strings now)
-func (s RenderedSentence) AppendString(str string) RenderedSentence {
-	return append(s, str)
-}
-
-// FIXME: I don't think this works properly anymore (Because the `RenderedSentece` is a slice of strings now)
-func (s RenderedSentence) AppendResetColor() RenderedSentence {
-	return append(s, ResetColor)
-}
-
-type letterType int
-
-// TODO: Make a specific `style` package
-// IDEA: Make a "testing" style set, where the strings are just `TypedColor = "{Typed}", ResetColor = "{Reset}"` etc., for easier testing/debugging
-
-const (
-	TypedColor   string = "\x1b[38;5;245m" + "\x1b[49m"
-	UntypedColor string = "\x1b[38;5;255m" + "\x1b[49m"
-	CursorColor  string = "\x1b[38;5;232m" + "\x1b[48;5;231m"
-	ErrorColor   string = "\x1b[38;5;160m" + "\x1b[49m"
-	ResetColor   string = "\x1b[39m" + "\x1b[49m"
-)
-
-const (
-	// A letter that was typed correctly
-	TypedLetter letterType = iota
-	// A letter that hasn't been typed
-	UntypedLetter
-	// A letter that is under the cursor
-	CursorLetter
-	// A letter that was typed incorrectly
-	ErrorLetter
-)
-
-type Letter struct {
-	T      letterType
-	Letter rune
-}
 
 type tokenType int
 
@@ -186,7 +133,7 @@ const (
 
 type Token struct {
 	T tokenType
-	// NOTE: I am converting this to a []rune all the time. Should that just be its type?
+	// NOTE: I am converting this to a []rune all the time. Should that just be its type? (Call it `Runes`)
 	String string
 }
 
@@ -210,7 +157,6 @@ func (self Token) Format(s fmt.State, verb rune) {
 func Split(runes []rune) Sentence {
 	tokens := []Token{}
 	currentTokenStart := 0
-	// NOTE: This will probably fail because of the first iteration
 	currentTokenType := UnknownToken
 
 	for i, r := range runes {

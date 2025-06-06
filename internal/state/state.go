@@ -13,9 +13,7 @@ const (
 	EndScreenPage
 )
 
-// TODO: Add window dimensions
 type AppModel struct {
-	// HACK: What is the point in creating the `screenModel` interface if I am storing the things that implement it directly?
 	TestScreenState testScreenModel
 	EndScreenState  endScreenModel
 	CurrentPage     pageType
@@ -25,7 +23,7 @@ type AppModel struct {
 
 func Init() AppModel {
 	return AppModel{
-		TestScreenState: newTestScreen("This is a test."), // TODO: Test if word wrapping works for long lines
+		TestScreenState: newTestScreen("This is a test. This is a very long test. Super duper long sentence. Bla bla bla. It is so long, and boring, and monotonous. Is that spelled correctly? I don't think so, but maybe it is. We shall see."),
 		CurrentPage:     TestScreenPage,
 	}
 }
@@ -42,7 +40,6 @@ func (self AppModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	switch msg := msg.(type) {
 	case tea.WindowSizeMsg:
-		// FIXME: I think this happens _after_ .View is called, so these values are not accessible in the first .View
 		self.WindowHeight = msg.Height
 		self.WindowWidth = msg.Width
 		log.Printf("(AppModel.Update) New window size: height: %v, width: %v", self.WindowHeight, self.WindowWidth)

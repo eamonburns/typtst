@@ -43,7 +43,8 @@ func (self *testScreenModel) Update(appModel *AppModel, msg tea.Msg) (pageType, 
 
 			key := msg.Runes[0]
 
-			// FIXME: In some cases, this can cause an out-of-bounds exception
+			// TODO: If `space` is pressed, jump after next whitespace token
+			// FIXME: In some cases, this can cause an out-of-bounds exception. I don't know how
 			if key != []rune(self.sentence)[self.cursor] {
 				log.Printf("key (%c) != current (%c)", key, []rune(self.sentence)[self.cursor])
 				self.errors[self.cursor] = true
