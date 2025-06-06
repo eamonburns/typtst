@@ -8,14 +8,14 @@ import (
 )
 
 func TestSplit(t *testing.T) {
-	s := "This is a test."
+	s := []rune("This is a test.")
 	expected := []sentence.Token{
 		{
 			T:      sentence.WordToken,
 			String: "This",
 		},
 		{
-			T:      sentence.WhitespaceToken,
+			T:      sentence.SpaceToken,
 			String: " ",
 		},
 		{
@@ -23,7 +23,7 @@ func TestSplit(t *testing.T) {
 			String: "is",
 		},
 		{
-			T:      sentence.WhitespaceToken,
+			T:      sentence.SpaceToken,
 			String: " ",
 		},
 		{
@@ -31,7 +31,7 @@ func TestSplit(t *testing.T) {
 			String: "a",
 		},
 		{
-			T:      sentence.WhitespaceToken,
+			T:      sentence.SpaceToken,
 			String: " ",
 		},
 		{
@@ -49,7 +49,7 @@ func TestSplit(t *testing.T) {
 		t.Fatalf("Expected %v, got %v", expected, actual)
 	}
 
-	s = "It's called \"pizza\"?"
+	s = []rune("It's called \"pizza\"?")
 	expected = []sentence.Token{
 		{
 			T:      sentence.WordToken,
@@ -64,7 +64,7 @@ func TestSplit(t *testing.T) {
 			String: "s",
 		},
 		{
-			T:      sentence.WhitespaceToken,
+			T:      sentence.SpaceToken,
 			String: " ",
 		},
 		{
@@ -72,7 +72,7 @@ func TestSplit(t *testing.T) {
 			String: "called",
 		},
 		{
-			T:      sentence.WhitespaceToken,
+			T:      sentence.SpaceToken,
 			String: " ",
 		},
 		{
@@ -99,7 +99,7 @@ func TestSplit(t *testing.T) {
 		t.Fatalf("Expected %v, got %v", expected, actual)
 	}
 
-	s = "(Parentheses)"
+	s = []rune("(Parentheses)")
 	expected = []sentence.Token{
 		{
 			T:      sentence.PunctuationToken,

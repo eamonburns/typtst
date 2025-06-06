@@ -124,11 +124,13 @@ type RenderedSentence []string
 
 type tokenType int
 
+// TODO: Should I add a "LineBreakToken"? This would force a new-line when rendering
+
 const (
 	UnknownToken tokenType = iota
 	WordToken
 	PunctuationToken
-	WhitespaceToken
+	SpaceToken
 )
 
 type Token struct {
@@ -146,7 +148,7 @@ func (self Token) Format(s fmt.State, verb rune) {
 		typeString = "Word"
 	case PunctuationToken:
 		typeString = "Punctuation"
-	case WhitespaceToken:
+	case SpaceToken:
 		typeString = "Whitespace"
 	default:
 		typeString = "Error"
@@ -155,7 +157,7 @@ func (self Token) Format(s fmt.State, verb rune) {
 }
 
 func Split(runes []rune) Sentence {
-	tokens := []Token{}
+	sentence := Sentence{}
 	currentTokenStart := 0
 	currentTokenType := UnknownToken
 
@@ -165,20 +167,20 @@ func Split(runes []rune) Sentence {
 			// The rune is whitespace
 			log.Printf("Is whitespace")
 
-			if currentTokenType != WhitespaceToken && i != 0 {
-				tokens = append(tokens, Token{
+			if currentTokenType != SpaceToken && i != 0 {
+				sentence = append(sentence, Token{
 					T:      currentTokenType,
 					String: string(runes[currentTokenStart:i]),
 				})
 				currentTokenStart = i
 			}
-			currentTokenType = WhitespaceToken
+			currentTokenType = SpaceToken
 		} else if unicode.In(r, unicode.Letter, unicode.Digit) {
 			// The rune is a letter or digit
 			log.Printf("Is letter or digit")
 
 			if currentTokenType != WordToken && i != 0 {
-				tokens = append(tokens, Token{
+				sentence = append(sentence, Token{
 					T:      currentTokenType,
 					String: string(runes[currentTokenStart:i]),
 				})
@@ -190,7 +192,7 @@ func Split(runes []rune) Sentence {
 			log.Printf("Is punctuation")
 
 			if i != 0 {
-				tokens = append(tokens, Token{
+				sentence = append(sentence, Token{
 					T:      currentTokenType,
 					String: string(runes[currentTokenStart:i]),
 				})
@@ -202,7 +204,7 @@ func Split(runes []rune) Sentence {
 			log.Printf("Is unknown")
 
 			if currentTokenType != UnknownToken && i != 0 {
-				tokens = append(tokens, Token{
+				sentence = append(sentence, Token{
 					T:      currentTokenType,
 					String: string(runes[currentTokenStart:i]),
 				})
@@ -213,10 +215,10 @@ func Split(runes []rune) Sentence {
 	}
 
 	// Append the last token
-	tokens = append(tokens, Token{
+	sentence = append(sentence, Token{
 		T:      currentTokenType,
 		String: string(runes[currentTokenStart:]),
 	})
 
-	return tokens
+	return sentence
 }

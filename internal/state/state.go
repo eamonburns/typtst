@@ -23,7 +23,7 @@ type AppModel struct {
 
 func Init() AppModel {
 	return AppModel{
-		TestScreenState: newTestScreen("This is a test. This is a very long test. Super duper long sentence. Bla bla bla. It is so long, and boring, and monotonous. Is that spelled correctly? I don't think so, but maybe it is. We shall see."),
+		TestScreenState: newTestScreen("This is a\ntest.\t\tCool"),
 		CurrentPage:     TestScreenPage,
 	}
 }

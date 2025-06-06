@@ -16,7 +16,7 @@ type testScreenModel struct {
 
 func newTestScreen(s string) testScreenModel {
 	return testScreenModel{
-		sentence: []rune(s),
+		sentence: []rune(strings.Join(strings.Fields(s), " ")),
 		cursor:   0,
 		errors:   make(map[int]bool),
 	}
@@ -69,7 +69,6 @@ func (self testScreenModel) View(appModel AppModel) string {
 
 	// TODO: Make this configurable
 	const padding = 10
-	str := "\n\n"
 	s := sentence.Split(self.sentence)
 
 	if appModel.WindowWidth < 1 {
@@ -77,12 +76,16 @@ func (self testScreenModel) View(appModel AppModel) string {
 		// Don't render anything
 		return ""
 	}
-	maxLineWidth := appModel.WindowWidth - (2 * padding)
+	horizontalPadding := appModel.WindowWidth / 4
+	maxLineWidth := appModel.WindowWidth - (2 * horizontalPadding)
 
 	lines := s.Render(self.cursor, self.errors, maxLineWidth)
 	log.Printf("lines: %q", lines)
+
+	// TODO: Vertically-center text using appModel.WindowHeight and len(lines)
+	str := "\n\n"
 	for _, line := range lines {
-		str += strings.Repeat(" ", padding)
+		str += strings.Repeat(" ", horizontalPadding)
 		str += line
 		str += "\n"
 	}
