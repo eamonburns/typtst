@@ -22,7 +22,7 @@ var currentStyle styleMap = map[styleType]string{
 	TypedStyle:   "\x1b[38;5;255m" + "\x1b[49m",
 	UntypedStyle: "\x1b[38;5;245m" + "\x1b[49m",
 	CursorStyle:  "\x1b[38;5;232m" + "\x1b[48;5;231m",
-	ErrorStyle:   "\x1b[38;5;160m" + "\x1b[49m", // TODO: Make this red background with white foreground
+	ErrorStyle:   "\x1b[39m" + "\x1b[48;5;160m",
 }
 
 func Get(t styleType) string {
