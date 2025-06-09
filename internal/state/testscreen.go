@@ -83,7 +83,10 @@ func (self testScreenModel) View(appModel AppModel) string {
 	log.Printf("lines: %q", lines)
 
 	// TODO: Vertically-center text using appModel.WindowHeight and len(lines)
-	str := "\n\n"
+	if len(lines) > appModel.WindowHeight {
+		log.Fatalf("number of rendered lines (%v) is greater than height of window (%v)", len(lines), appModel.WindowHeight)
+	}
+	str := strings.Repeat("\n", (appModel.WindowHeight-len(lines))/2)
 	for _, line := range lines {
 		str += strings.Repeat(" ", horizontalPadding)
 		str += line

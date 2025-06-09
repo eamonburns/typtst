@@ -3,6 +3,7 @@ package state
 import (
 	"log"
 
+	"github.com/agent-e11/typtst/internal/sentence"
 	tea "github.com/charmbracelet/bubbletea"
 )
 
@@ -23,7 +24,8 @@ type AppModel struct {
 
 func Init() AppModel {
 	return AppModel{
-		TestScreenState: newTestScreen("This is a\ntest.\t\tCool"),
+		// Initialize the test screen with 50 random words
+		TestScreenState: newTestScreen(sentence.GenerateRandom(50)),
 		CurrentPage:     TestScreenPage,
 	}
 }
