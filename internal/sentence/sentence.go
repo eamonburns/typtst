@@ -30,8 +30,9 @@ func (self Sentence) Render(cursorIdx int, errors map[int]bool, maxWidth int) Re
 		startIdx := currentIdx
 		endIdx := currentIdx + len(t.String)
 
-		if currentWidth+len(t.String) > maxWidth {
+		if currentWidth+len(t.String) > maxWidth && t.T != SpaceToken {
 			// This line is done, append it and start new line
+			// (Don't wrap if the current token is a space)
 			line += style.Get(style.ResetStyle)
 			lines = append(lines, line)
 			if currentIdx < cursorIdx {
@@ -40,6 +41,7 @@ func (self Sentence) Render(cursorIdx int, errors map[int]bool, maxWidth int) Re
 				line = style.Get(style.UntypedStyle)
 			}
 			currentWidth = 0
+
 		}
 
 		if cursorIdx < startIdx {
