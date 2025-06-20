@@ -6,13 +6,14 @@ import (
 	"unicode"
 
 	"github.com/agent-e11/typtst/internal/style"
+	"github.com/agent-e11/typtst/internal/types"
 )
 
 type Sentence []Token
 
 // NOTE: Should this return an error?
 
-func (self Sentence) Render(cursorIdx int, errors map[int]bool, maxWidth int) RenderedSentence {
+func (self Sentence) Render(cursorIdx int, errors map[int]types.TypingError, maxWidth int) RenderedSentence {
 	log.Printf("> Sentence.Render(cursorIdx: %v, errors: %v, maxWidth: %v)", cursorIdx, errors, maxWidth)
 	log.Printf("self: %v", self)
 	lines := RenderedSentence{}
@@ -67,7 +68,7 @@ func (self Sentence) Render(cursorIdx int, errors map[int]bool, maxWidth int) Re
 
 			// I only need to handle "Typed" and "Error" styles
 			for i, r := range []rune(t.String) {
-				if errors[currentIdx+i] {
+				if _, ok := errors[currentIdx+i]; ok {
 					// There was an error at the current rune
 					line += style.Get(style.ErrorStyle)
 					line += string(r)
@@ -100,7 +101,7 @@ func (self Sentence) Render(cursorIdx int, errors map[int]bool, maxWidth int) Re
 
 					// The rest of the token has been appended. No need to loop over it
 					break
-				} else if errors[currentIdx+i] {
+				} else if _, ok := errors[currentIdx+i]; ok {
 					// There was an error at the current rune
 					line += style.Get(style.ErrorStyle)
 					line += string(r)

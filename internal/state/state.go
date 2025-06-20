@@ -25,7 +25,8 @@ type AppModel struct {
 func Init() AppModel {
 	return AppModel{
 		// Initialize the test screen with 50 random words
-		TestScreenState: newTestScreen(sentence.GenerateRandom(50)),
+		//TestScreenState: newTestScreen(sentence.GenerateRandom(50)),
+		TestScreenState: newTestScreen(sentence.GenerateRandom(10)),
 		CurrentPage:     TestScreenPage,
 	}
 }

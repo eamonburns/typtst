@@ -5,20 +5,21 @@ import (
 	"strings"
 
 	"github.com/agent-e11/typtst/internal/sentence"
+	"github.com/agent-e11/typtst/internal/types"
 	tea "github.com/charmbracelet/bubbletea"
 )
 
 type testScreenModel struct {
 	sentence []rune
 	cursor   int
-	errors   map[int]bool
+	errors   map[int]types.TypingError
 }
 
 func newTestScreen(s string) testScreenModel {
 	return testScreenModel{
 		sentence: []rune(strings.Join(strings.Fields(s), " ")),
 		cursor:   0,
-		errors:   make(map[int]bool),
+		errors:   make(map[int]types.TypingError),
 	}
 }
 
@@ -45,9 +46,13 @@ func (self *testScreenModel) Update(appModel *AppModel, msg tea.Msg) (pageType, 
 
 			// TODO: If `space` is pressed, jump after next whitespace token
 			// FIXME: In some cases, this can cause an out-of-bounds exception. I don't know how
-			if key != []rune(self.sentence)[self.cursor] {
+			expectedKey := []rune(self.sentence)[self.cursor]
+			if key != expectedKey {
 				log.Printf("key (%c) != current (%c)", key, []rune(self.sentence)[self.cursor])
-				self.errors[self.cursor] = true
+				self.errors[self.cursor] = types.TypingError{
+					Expected: expectedKey,
+					Actual:   key,
+				}
 			}
 			self.cursor += 1
 		}
@@ -55,9 +60,8 @@ func (self *testScreenModel) Update(appModel *AppModel, msg tea.Msg) (pageType, 
 
 	if self.cursor >= len(self.sentence) {
 		log.Printf("Error set: %v, Len: %v", self.errors, len(self.errors))
-		errorCount := len(self.errors)
 		//fmt.Printf("Done, with %v errors", errorCount)
-		appModel.EndScreenState.ErrorCount = errorCount
+		appModel.EndScreenState.Errors = self.errors
 		return EndScreenPage, nil
 	}
 
@@ -67,8 +71,6 @@ func (self *testScreenModel) Update(appModel *AppModel, msg tea.Msg) (pageType, 
 func (self testScreenModel) View(appModel AppModel) string {
 	log.Printf("> testScreenModel.View(appModel: %v)", appModel)
 
-	// TODO: Make this configurable
-	const padding = 10
 	s := sentence.Split(self.sentence)
 
 	if appModel.WindowWidth < 1 {

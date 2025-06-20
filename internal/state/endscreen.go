@@ -4,11 +4,12 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/agent-e11/typtst/internal/types"
 	tea "github.com/charmbracelet/bubbletea"
 )
 
 type endScreenModel struct {
-	ErrorCount int
+	Errors map[int]types.TypingError
 }
 
 func (self endScreenModel) Init() tea.Cmd {
@@ -26,5 +27,12 @@ func (self endScreenModel) Update(appModel AppModel, msg tea.Msg) (pageType, tea
 
 func (self endScreenModel) View(appModel AppModel) string {
 	log.Printf("> endScreenModel.View()")
-	return fmt.Sprintf("\n  Done, with %v errors\n\nPress any key to quit", self.ErrorCount)
+	str := ""
+	str += fmt.Sprintf("\n  Done, with %v errors\n", len(self.Errors))
+	for i, e := range self.Errors {
+		str += fmt.Sprintf("  i: %v, e: %v\n", i, e)
+	}
+
+	str += "\n\nPress any key to quit"
+	return str
 }
