@@ -5,8 +5,8 @@ import (
 	"log"
 	"unicode"
 
-	"github.com/agent-e11/typtst/internal/style"
-	"github.com/agent-e11/typtst/internal/types"
+	"github.com/eamonburns/typtst/internal/style"
+	"github.com/eamonburns/typtst/internal/types"
 )
 
 type Sentence []Token

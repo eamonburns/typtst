@@ -5,8 +5,8 @@ import (
 	"log"
 	"os"
 
-	"github.com/agent-e11/typtst/internal/state"
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/eamonburns/typtst/internal/state"
 )
 
 func main() {

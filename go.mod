@@ -1,4 +1,4 @@
-module github.com/agent-e11/typtst
+module github.com/eamonburns/typtst
 
 go 1.24.3
 

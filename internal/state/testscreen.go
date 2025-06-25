@@ -4,9 +4,9 @@ import (
 	"log"
 	"strings"
 
-	"github.com/agent-e11/typtst/internal/sentence"
-	"github.com/agent-e11/typtst/internal/types"
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/eamonburns/typtst/internal/sentence"
+	"github.com/eamonburns/typtst/internal/types"
 )
 
 type testScreenModel struct {

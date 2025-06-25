@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/agent-e11/typtst/internal/types"
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/eamonburns/typtst/internal/types"
 )
 
 type endScreenModel struct {

@@ -4,7 +4,7 @@ import (
 	"math/rand"
 	"strings"
 
-	"github.com/agent-e11/typtst/internal/words"
+	"github.com/eamonburns/typtst/internal/words"
 )
 
 func GenerateRandom(count int) string {

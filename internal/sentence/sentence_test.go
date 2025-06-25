@@ -4,7 +4,7 @@ import (
 	"slices"
 	"testing"
 
-	"github.com/agent-e11/typtst/internal/sentence"
+	"github.com/eamonburns/typtst/internal/sentence"
 )
 
 func TestSplit(t *testing.T) {

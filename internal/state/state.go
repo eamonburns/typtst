@@ -3,8 +3,8 @@ package state
 import (
 	"log"
 
-	"github.com/agent-e11/typtst/internal/sentence"
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/eamonburns/typtst/internal/sentence"
 )
 
 type pageType int
